@@ -1,9 +1,14 @@
-.main {
-  padding: 2rem;
-  font-family: sans-serif;
-}
+nav {
+  margin-bottom: 16px;
 
-.content {
-  max-width: 800px;
-  margin: 0 auto;
+  a {
+    text-decoration: none;
+    color: #007bff;
+    margin-right: 16px;
+    font-weight: 600;
+
+    &.active {
+      text-decoration: underline;
+    }
+  }
 }
