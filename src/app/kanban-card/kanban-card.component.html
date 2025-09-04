@@ -1,0 +1,11 @@
+<div class="kanban-card-container" [class]="'status-' + task().status.replace(' ', '-').toLowerCase()">
+  <div class="kanban-card-header">
+    <h3>{{ task().title }}</h3>
+    <span class="kanban-card-status">{{ task().status }}</span>
+  </div>
+  <p>{{ task().description }}</p>
+  <div class="kanban-card-actions">
+    <button (click)="onEdit()">Edit</button>
+    <button (click)="onDelete()">Delete</button>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+.kanban-card-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: grab;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.2s ease-in-out;
+
+    &:active {
+        cursor: grabbing;
+    }
+
+    &.is-dragging {
+        transform: scale(1.03);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    // This class should be applied to the original card element
+    // when a drag operation begins to hide it, leaving only the drag-preview visible.
+    &.is-ghost {
+        opacity: 0;
+    }
+}
+
+.kanban-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .kanban-card-status {
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+}
+
+p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.kanban-card-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+
+        &:hover {
+            opacity: 0.9;
+        }
+
+        &:first-child {
+            background-color: #17a2b8; /* Info blue */
+        }
+
+        &:last-child {
+            background-color: #dc3545; /* Danger red */
+        }
+    }
+}

@@ -1,0 +1,24 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 300px;
+  min-height: 710px;
+}
+
+.kanban-column {
+  background-color: #f4f5f7;
+  border-radius: 4px;
+  padding: 16px;
+  height: 100%;
+}
+
+.cards {
+  min-height: 200px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+h2 {
+  margin-top: 0;
+  flex-shrink: 0;
+}

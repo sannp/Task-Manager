@@ -1,10 +1,27 @@
-<h2>My Tasks</h2>
 <div class="task-list-container">
-  <div *ngFor="let task of tasks" class="task-card" [ngClass]="'status-' + task.status.replace(' ', '-').toLowerCase()">
-    <div class="task-header">
-      <h3>{{ task.title }}</h3>
-      <span class="task-status">{{ task.status }}</span>
+  <div class="header-section">
+    <div class="filter-section">
+      <label for="statusFilter">Filter by Status:</label>
+      <select id="statusFilter" (change)="onStatusFilterChange($event)">
+        <option value="">All</option>
+        @for (status of statuses(); track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
     </div>
-    <p>{{ task.description }}</p>
+    <button class="create-task-button" (click)="openCreateTaskModal()">Create New Task</button>
   </div>
+  @for (task of filteredTasks(); track task.id) {
+    <app-list-task-item
+      [task]="task"
+      (editTask)="openEditTaskModal($event)"
+      (deleteTask)="deleteTask($event)">
+    </app-list-task-item>
+  }
 </div>
+
+<app-modal #taskModal [title]="selectedTask ? 'Edit Task' : 'Create Task'" (closed)="onModalClose()">
+  @if (showTaskForm()) {
+    <app-task-form [task]="selectedTask" (submitForm)="handleTaskFormSubmit($event)"></app-task-form>
+  }
+</app-modal>
