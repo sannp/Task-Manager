@@ -1,0 +1,63 @@
+<div class="configuration-container">
+  <h2>Task Status Management</h2>
+
+<div class="status-list">
+  <h3>Current Statuses</h3>
+  <ul>
+    @for (status of statuses(); track status) {
+      <li>
+        @if (editingStatus() === status) {
+          <div class="edit-form">
+            <div class="form-field">
+              <label for="editedStatusName">Name</label>
+              <input id="editedStatusName" type="text" [(ngModel)]="editedStatusName" (keydown.enter)="updateStatus()" (keydown.escape)="cancelEditing()"/>
+            </div>
+            <div class="form-field">
+              <label for="editedStatusOrder">Order</label>
+              <input id="editedStatusOrder" type="number" [(ngModel)]="editedStatusOrder" (keydown.enter)="updateStatus()" (keydown.escape)="cancelEditing()"/>
+            </div>
+            <div class="form-field">
+              <label for="editedStatusColor">Color</label>
+              <input id="editedStatusColor" type="color" [(ngModel)]="editedStatusColor"/>
+            </div>
+            <button class="icon-button" (click)="updateStatus()" aria-label="Save">✓</button>
+            <button class="icon-button" (click)="cancelEditing()" aria-label="Cancel">✗</button>
+          </div>
+        } @else {
+          <div class="status-item">
+            <span [style.border-color]="status.color">{{ status.name }}</span>
+            <div class="actions">
+              <button class="icon-button" (click)="startEditing(status)" aria-label="Edit">✏️</button>
+              <button class="icon-button" (click)="deleteStatus(status)" aria-label="Delete">🗑️</button>
+            </div>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</div>
+
+<form class="add-status-form" [formGroup]="addStatusForm" (ngSubmit)="addStatus()">
+  <h3>Add New Status</h3>
+  <div class="form-row">
+    <div class="form-field">
+      <label for="newStatusName">Name</label>
+      <input id="newStatusName" type="text" formControlName="name" placeholder="New status name"/>
+      @if(addStatusForm.controls.name.invalid && addStatusForm.controls.name.touched) {
+        <div class="error-message">Name is required.</div>
+      }
+    </div>
+    <div class="form-field">
+      <label for="newStatusOrder">Sort Order</label>
+      <input id="newStatusOrder" type="number" formControlName="order" placeholder="Sort Order"/>
+    </div>
+    <div class="form-field">
+      <label for="newStatusColor">Color</label>
+      <input id="newStatusColor" type="color" formControlName="color"/>
+    </div>
+  </div>
+  <div class="form-actions">
+    <button type="submit" [disabled]="addStatusForm.invalid">Add Status</button>
+  </div>
+</form>
+</div>

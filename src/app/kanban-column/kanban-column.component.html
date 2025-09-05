@@ -2,7 +2,7 @@
   <h2>{{ title }}</h2>
   <div [id]="columnId()" class="cards" [sortablejs]="tasks()" [sortablejsOptions]="sortableOptions">
     @for (task of tasks(); track task.id) {
-      <app-kanban-card [task]="task" (edit)="onEditTask(task)" (delete)="onDeleteTask(task.id!)"></app-kanban-card>
+      <app-kanban-card [task]="task" (edit)="onEditTask(task)" (delete)="onDeleteTask(task.id!)" [attr.data-task-id]="task.id"></app-kanban-card>
     }
   </div>
 </div>

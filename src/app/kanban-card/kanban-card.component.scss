@@ -6,20 +6,10 @@
     margin-bottom: 12px;
     cursor: grab;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    border-left: 5px solid transparent;
 
     &:active {
         cursor: grabbing;
-    }
-
-    &.is-dragging {
-        transform: scale(1.03);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    // This class should be applied to the original card element
-    // when a drag operation begins to hide it, leaving only the drag-preview visible.
-    &.is-ghost {
-        opacity: 0;
     }
 }
 

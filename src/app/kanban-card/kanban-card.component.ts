@@ -1,6 +1,7 @@
-import { Component, input, Output, EventEmitter } from '@angular/core';
+import { Component, input, Output, EventEmitter, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../models/task';
+import { TaskStatusService } from '../services/task-status.service';
 
 @Component({
   selector: 'app-kanban-card',
@@ -17,6 +18,12 @@ export class KanbanCardComponent {
 
   @Output()
   delete = new EventEmitter<void>();
+
+  private taskStatusService = inject(TaskStatusService);
+
+  status = computed(() => {
+    return this.taskStatusService.statuses().find(s => s.name === this.task().status);
+  });
 
   onEdit(): void {
     this.edit.emit();

@@ -53,19 +53,18 @@ export class KanbanViewComponent {
       onStart: (event: any) => {
       },
       onEnd: (event: any) => {
-        const { to, newIndex, from } = event;
-
+        const { to, item } = event;
+        const taskId = item.getAttribute('data-task-id');
         const toStatus = this.getStatusFromColumnId(to.id);
-        const toColumn = this.columns.find(c => c.title === toStatus);
 
-        if (toColumn && toStatus) {
-          const movedTask = toColumn.tasks()[newIndex];
-
-          if (movedTask && movedTask.status !== toStatus) {
-            this.taskService.updateTaskStatus(movedTask, toStatus).subscribe(() => {
-              this.loadTasks();
-            });
-          }
+        if (taskId && toStatus) {
+          this.taskService.getTaskById(Number(taskId)).subscribe(task => {
+            if (task && task.status !== toStatus) {
+              this.taskService.updateTaskStatus(task, toStatus).subscribe(() => {
+                this.loadTasks();
+              });
+            }
+          });
         }
       },
     };
