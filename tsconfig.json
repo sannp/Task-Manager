@@ -28,6 +28,9 @@
       ],
       "@services/*": [
         "src/app/services/*"
+      ],
+      "@components/*": [
+        "src/app/shared/components/*"
       ]
     }
   },

@@ -1,0 +1,33 @@
+<div class="list-table-container">
+  <div class="header-section">
+    @if (title()) {
+      <h2>{{ title() }}</h2>
+    }
+    <div class="actions-section">
+      <n-input label="Search" (input)="onSearch($event)"></n-input>
+      <n-button (click)="add.emit()" variant="filled">Add New</n-button>
+    </div>
+  </div>
+
+  <n-table [columns]="displayedColumns" [data]="data()"></n-table>
+
+  <ng-template #actionsTemplate let-element>
+    @if (viewAction()) {
+      <n-icon-button icon="visibility" tooltip="View" (click)="view.emit(element)"></n-icon-button>
+    }
+    @if (editAction()) {
+      <n-icon-button icon="edit" tooltip="Edit" (click)="edit.emit(element)"></n-icon-button>
+    }
+    @if (deleteAction()) {
+      <n-icon-button icon="delete" tooltip="Delete" color="warn" (click)="confirmDelete(element); $event.stopPropagation()"></n-icon-button>
+    }
+    @for (action of actions(); track action.icon) {
+      <n-icon-button
+        [icon]="action.icon"
+        [tooltip]="action.tooltip"
+        [color]="action.color"
+        (click)="action.action(element); $event.stopPropagation()"
+      ></n-icon-button>
+    }
+  </ng-template>
+</div>

@@ -1,0 +1,14 @@
+
+<mat-form-field>
+  <mat-label>{{ label() }}</mat-label>
+  <input 
+    type="text" 
+    matInput 
+    [matAutocomplete]="auto" 
+    [formControl]="searchCtrl" />
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectionChange($event.option.value)">
+    @for (option of filteredOptions | async; track option.id) {
+      <mat-option [value]="option">{{ option.name }}</mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>
