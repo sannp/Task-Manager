@@ -15,5 +15,6 @@ export type NButtonVariant = 'text' | 'elevated' | 'outlined' | 'filled' | 'tona
 export class NButtonComponent {
   color = input<ThemePalette>('primary');
   type = input<'button' | 'submit' | 'reset'>('button');
-  variant = input<NButtonVariant>('text');
+  variant = input<NButtonVariant>('filled');
+  disabled = input<boolean>(false);
 }

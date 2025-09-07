@@ -1,4 +1,4 @@
 <mat-form-field>
   <mat-label>{{ label() }}</mat-label>
-  <input matInput [type]="type()" (input)="onInput($event)" />
+  <input matInput [type]="type()" (input)="onInput($event)" #inputElement [disabled]="_disabled()" />
 </mat-form-field>

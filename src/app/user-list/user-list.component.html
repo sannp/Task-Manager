@@ -1,0 +1,14 @@
+<app-list-table
+  [title]="'Users'"
+  [data]="users()"
+  [columns]="userColumns"
+  (add)="onAddUser()"
+  (edit)="onEditUser($event)"
+  (delete)="onDeleteUser($event)"
+  (view)="onViewUser($event)"
+>
+</app-list-table>
+
+<n-modal #userModal [title]="currentFormMode() === 'add' ? 'Create User' : (currentFormMode() === 'edit' ? 'Edit User' : 'View User')" (closed)="onModalClose()">
+  <app-user-form [user]="selectedUser" [isViewMode]="currentFormMode() === 'view'" (submitForm)="handleUserFormSubmit($event)"></app-user-form>
+</n-modal>

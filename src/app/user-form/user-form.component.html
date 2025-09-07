@@ -1,0 +1,14 @@
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <n-input label="Name" formControlName="name" [disabled]="isViewMode()"></n-input>
+  <n-input label="Email" formControlName="email" [disabled]="isViewMode()"></n-input>
+  <n-input label="Username" formControlName="username" [disabled]="isViewMode()"></n-input>
+  <n-input label="Password" formControlName="password" type="password" [disabled]="isViewMode()"></n-input>
+  <n-select label="Role" formControlName="role" [options]="roles" [disabled]="isViewMode()"></n-select>
+
+  @if (!isViewMode()) {
+    <div class="footer-section">
+      <n-button type="submit" [disabled]="!userForm.valid">Save</n-button>
+      <n-button type="button" variant="outlined" (click)="cancel.emit()">Cancel</n-button>
+    </div>
+  }
+</form>

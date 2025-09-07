@@ -1,5 +1,4 @@
-
-import { Component, input, forwardRef } from '@angular/core';
+import { Component, input, forwardRef, signal, WritableSignal } from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule, FormControl, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -28,6 +27,9 @@ export class NSelectComponent implements ControlValueAccessor {
   label = input<string>();
   options = input<any[]>([]);
   multiple = input<boolean>(false);
+  // disabled = input<boolean>(false); // Remove this input
+
+  _disabled: WritableSignal<boolean> = signal(false); // Use a private signal for disabled state
 
   selectCtrl = new FormControl();
 
@@ -44,6 +46,15 @@ export class NSelectComponent implements ControlValueAccessor {
 
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this._disabled.set(isDisabled); // Update the private signal
+    if (isDisabled) {
+      this.selectCtrl.disable();
+    } else {
+      this.selectCtrl.enable();
+    }
   }
 
   onSelectionChange(value: any): void {

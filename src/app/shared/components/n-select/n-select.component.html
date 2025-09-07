@@ -1,10 +1,10 @@
-
 <mat-form-field>
   <mat-label>{{ label() }}</mat-label>
   <mat-select 
     [multiple]="multiple()" 
     (selectionChange)="onSelectionChange($event.value)" 
-    [formControl]="selectCtrl">
+    [formControl]="selectCtrl"
+    [disabled]="_disabled()">
     @for (option of options(); track option.id) {
       <mat-option [value]="option">{{ option.name }}</mat-option>
     }

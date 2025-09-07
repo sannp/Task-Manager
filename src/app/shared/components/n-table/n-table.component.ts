@@ -26,7 +26,7 @@ export interface NTableColumn {
   templateUrl: './n-table.component.html',
   styleUrls: ['./n-table.component.scss'],
 })
-export class NTableComponent<T> implements OnInit, AfterViewInit {
+export class NTableComponent<T extends { id?: number }> implements OnInit, AfterViewInit { // Add generic constraint
   columns = input<NTableColumn[]>([]);
   data = input<T[]>([]);
 
