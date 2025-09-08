@@ -1,7 +1,4 @@
 .task-list-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   padding: 20px;
 }
 
@@ -9,8 +6,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
+
   .filter-section {
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
 
@@ -44,11 +42,42 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
-    margin-bottom: 20px;
-    align-self: flex-start;
 
     &:hover {
       background-color: #0056b3;
     }
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  .edit-button, .delete-button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .edit-button {
+    background-color: #ffc107;
+    color: black;
+  }
+
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
   }
 }

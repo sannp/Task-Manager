@@ -1,22 +1,25 @@
-import { Component, OnInit, signal, WritableSignal, ViewChild, inject, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, ViewChild, inject, ChangeDetectionStrategy, computed, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task, TaskStatus } from '@models/task';
 import { TaskService } from '@services/task.service';
 import { TaskStatusService } from '@services/task-status.service';
-import { ListTaskItemComponent } from '../list-task-item/list-task-item.component';
-import { ModalComponent } from '../shared/modal/modal.component';
+import { NModalComponent } from '../shared/components/n-modal/n-modal.component';
+import { User } from '@models/user';
+import { ListTableComponent } from '../shared/components/list-table/list-table.component';
+import { NTableColumn } from '../shared/components/n-table/n-table.component';
 import { TaskFormComponent } from '../task-form/task-form.component';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, ListTaskItemComponent, ModalComponent, TaskFormComponent],
+  imports: [CommonModule, NModalComponent, ListTableComponent, TaskFormComponent],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskListComponent implements OnInit {
-  @ViewChild('taskModal') taskModal!: ModalComponent;
+  @ViewChild('taskModal') taskModal!: NModalComponent;
+  @ViewChild('assignedToTemplate') assignedToTemplate!: TemplateRef<any>;
 
   private taskService = inject(TaskService);
   private taskStatusService = inject(TaskStatusService);
@@ -24,8 +27,14 @@ export class TaskListComponent implements OnInit {
   statuses = this.taskStatusService.statuses;
   tasks: WritableSignal<Task[]> = signal([]);
   selectedTask: Task | undefined;
-  showTaskForm = signal(false);
-  currentFilterStatus: WritableSignal<TaskStatus | null> = signal(null);
+  currentFormMode = signal<'add' | 'edit' | 'view'>('add');
+
+  taskColumns: NTableColumn[] = [
+    { key: 'title', header: 'Title', sortable: true },
+    { key: 'description', header: 'Description', sortable: true },
+    { key: 'status', header: 'Status', sortable: true },
+    { key: 'assignedTo', header: 'Assigned To', sortable: false, template: undefined },
+  ];
 
   filteredTasks = computed(() => {
     const tasks = this.tasks();
@@ -36,8 +45,14 @@ export class TaskListComponent implements OnInit {
     return tasks.filter(task => task.status === filter);
   });
 
+  currentFilterStatus: WritableSignal<TaskStatus | null> = signal(null);
+
   ngOnInit(): void {
     this.loadTasks();
+    const assignedToColumn = this.taskColumns.find(col => col.key === 'assignedTo');
+    if (assignedToColumn) {
+      assignedToColumn.template = this.assignedToTemplate;
+    }
   }
 
   loadTasks(): void {
@@ -52,18 +67,24 @@ export class TaskListComponent implements OnInit {
 
   openCreateTaskModal(): void {
     this.selectedTask = undefined;
-    this.showTaskForm.set(true);
+    this.currentFormMode.set('add');
     this.taskModal.open();
   }
 
   openEditTaskModal(task: Task): void {
     this.selectedTask = { ...task };
-    this.showTaskForm.set(true);
+    this.currentFormMode.set('edit');
+    this.taskModal.open();
+  }
+
+  onViewTask(task: Task): void {
+    this.selectedTask = { ...task };
+    this.currentFormMode.set('view');
     this.taskModal.open();
   }
 
   onModalClose(): void {
-    this.showTaskForm.set(false);
+    // No need to set showTaskForm to false, as the modal handles content visibility
   }
 
   handleTaskFormSubmit(task: Task): void {
@@ -77,9 +98,11 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  deleteTask(id: number): void {
-    if (confirm('Are you sure you want to delete this task?')) {
-      this.taskService.deleteTask(id).subscribe(() => this.loadTasks());
-    }
+  deleteTask(task: Task): void {
+    this.taskService.deleteTask(task.id!).subscribe(() => this.loadTasks());
+  }
+
+  getAssignedUsersNames(assignedTo: User[] | undefined): string {
+    return (assignedTo || []).filter((u): u is User => !!u).map(u => u.name).join(', ');
   }
 }

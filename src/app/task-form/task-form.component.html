@@ -1,0 +1,13 @@
+<form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+  <n-input label="Title" formControlName="title" [disabled]="isViewMode()"></n-input>
+  <n-input label="Description" formControlName="description" [disabled]="isViewMode()"></n-input>
+
+  <n-select label="Status" formControlName="status" [options]="statuses()" [disabled]="isViewMode()"></n-select>
+
+  <n-select label="Assigned To" formControlName="assignedTo" [options]="(users$ | async) || []" [multiple]="true" [disabled]="isViewMode()"></n-select>
+
+  @if (!isViewMode()) {
+    <n-button type="submit" [disabled]="!taskForm.valid">Save</n-button>
+    <n-button type="button" (click)="cancel.emit()">Cancel</n-button>
+  }
+</form>
