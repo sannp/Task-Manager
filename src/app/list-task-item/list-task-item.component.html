@@ -1,0 +1,11 @@
+<div class="task-card" [style.border-color]="status()?.color">
+  <div class="task-header">
+    <h3>{{ task().title }}</h3>
+    <span class="task-status">{{ task().status }}</span>
+  </div>
+  <p>{{ task().description }}</p>
+  <div class="task-actions">
+    <button class="icon-button" (click)="onEdit()" aria-label="Edit">✏️</button>
+    <button class="icon-button" (click)="onDelete()" aria-label="Delete">🗑️</button>
+  </div>
+</div>

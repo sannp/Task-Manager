@@ -1,0 +1,7 @@
+<div class="task-card-container" [class]="'status-' + task().status.replace(' ', '-').toLowerCase()">
+  <div class="task-header">
+    <h3>{{ task().title }}</h3>
+    <span class="task-status">{{ task().status }}</span>
+  </div>
+  <p>{{ task().description }}</p>
+</div>

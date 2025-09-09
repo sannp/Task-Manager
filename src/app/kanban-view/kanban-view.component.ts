@@ -4,42 +4,41 @@ import { Task, TaskStatus } from '../models/task';
 import { TaskService } from '../services/task.service';
 import { KanbanColumnComponent } from '../kanban-column/kanban-column.component';
 import { Options } from 'sortablejs';
-import { ModalComponent } from '../shared/modal/modal.component';
+import { NModalComponent } from '../shared/components/n-modal/n-modal.component';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import { TaskStatusService } from '../services/task-status.service';
+import { UserService } from '../services/user.service';
+import { User } from '../models/user';
 
 interface KanbanColumn {
-  title: TaskStatus;
+  title: string;
   tasks: WritableSignal<Task[]>;
 }
 
 @Component({
   selector: 'app-kanban-view',
   standalone: true,
-  imports: [CommonModule, KanbanColumnComponent, ModalComponent, TaskFormComponent],
+  imports: [CommonModule, KanbanColumnComponent, NModalComponent, TaskFormComponent],
   templateUrl: './kanban-view.component.html',
   styleUrl: './kanban-view.component.scss'
 })
 export class KanbanViewComponent {
-  @ViewChild('taskModal') taskModal!: ModalComponent;
+  @ViewChild('taskModal') taskModal!: NModalComponent;
 
   private taskService = inject(TaskService);
   private taskStatusService = inject(TaskStatusService);
+  private userService = inject(UserService);
 
   columns: KanbanColumn[] = [];
+  organizeBy = signal<'status' | 'user'>('status');
 
   sortableOptions: Options;
   selectedTask: Task | undefined;
   showTaskForm = signal(false);
-  currentFilterStatus: WritableSignal<TaskStatus | null> = signal(null);
 
   constructor() {
     effect(() => {
-      const statuses = this.taskStatusService.statuses();
-      this.columns = statuses.map(status => ({
-        title: status.name,
-        tasks: signal([])
-      }));
+      this.buildColumns();
       this.loadTasks();
     });
 
@@ -48,21 +47,31 @@ export class KanbanViewComponent {
       ghostClass: 'kanban-ghost-card',
       dragClass: 'kanban-drag-card',
       chosenClass: 'kanban-chosen-card',
-      animation: 300,
+      animation: 600,
       easing: 'ease-out',
-      onStart: (event: any) => {
-      },
       onEnd: (event: any) => {
         const { to, item } = event;
         const taskId = item.getAttribute('data-task-id');
-        const toStatus = this.getStatusFromColumnId(to.id);
+        const toGroup = this.getGroupFromColumnId(to.id);
 
-        if (taskId && toStatus) {
+        if (taskId && toGroup) {
           this.taskService.getTaskById(Number(taskId)).subscribe(task => {
-            if (task && task.status !== toStatus) {
-              this.taskService.updateTaskStatus(task, toStatus).subscribe(() => {
-                this.loadTasks();
-              });
+            if (task) {
+              if (this.organizeBy() === 'status' && task.status !== toGroup) {
+                this.taskService.updateTaskStatus(task, toGroup as TaskStatus).subscribe(() => {
+                  this.loadTasks();
+                });
+              } else if (this.organizeBy() === 'user') {
+                this.userService.getUsers().subscribe(users => {
+                  const user = users.find(u => u.name === toGroup);
+                  if (user) {
+                    task.assignedTo = [user];
+                    this.taskService.updateTask(task).subscribe(() => {
+                      this.loadTasks();
+                    });
+                  }
+                });
+              }
             }
           });
         }
@@ -70,24 +79,40 @@ export class KanbanViewComponent {
     };
   }
 
+  buildColumns(): void {
+    if (this.organizeBy() === 'status') {
+      const statuses = this.taskStatusService.statuses();
+      this.columns = statuses.map(status => ({
+        title: status.name,
+        tasks: signal([])
+      }));
+    } else {
+      this.userService.getUsers().subscribe(users => {
+        this.columns = users.map(user => ({
+          title: user.name,
+          tasks: signal([])
+        }));
+      });
+    }
+  }
+
   loadTasks(): void {
     this.taskService.getTasks()
       .subscribe(tasks => {
-        const filteredTasks = this.currentFilterStatus()
-          ? tasks.filter(task => task.status === this.currentFilterStatus())
-          : tasks;
-
         for (const column of this.columns) {
-          column.tasks.set(filteredTasks.filter(task => task.status === column.title));
+          if (this.organizeBy() === 'status') {
+            column.tasks.set(tasks.filter(task => task.status === column.title));
+          }
+          else {
+            column.tasks.set(tasks.filter(task => task.assignedTo?.some(user => user.name === column.title)));
+          }
         }
       });
   }
 
-  onStatusFilterChange(event: Event): void {
+  onOrganizeByChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    const value = selectElement.value;
-    this.currentFilterStatus.set(value === '' ? null : (value as TaskStatus));
-    this.loadTasks();
+    this.organizeBy.set(selectElement.value as 'status' | 'user');
   }
 
   openCreateTaskModal(): void {
@@ -123,9 +148,8 @@ export class KanbanViewComponent {
     }
   }
 
-  private getStatusFromColumnId(id: string): TaskStatus | undefined {
-    const statuses = this.taskStatusService.statuses();
-    const foundStatus = statuses.find(s => s.name.toLowerCase().replace(/ /g, '-') === id);
-    return foundStatus ? foundStatus.name : undefined;
+  private getGroupFromColumnId(id: string): string | undefined {
+    const column = this.columns.find(c => c.title.toLowerCase().replace(/ /g, '-') === id);
+    return column ? column.title : undefined;
   }
 }

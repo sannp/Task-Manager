@@ -1,6 +1,11 @@
 <div class="kanban-view-container">
   <div class="header-section">
     <div class="filter-section">
+      <label for="organizeBy">Organize By:</label>
+      <select id="organizeBy" (change)="onOrganizeByChange($event)">
+        <option value="status">Status</option>
+        <option value="user">Users</option>
+      </select>
     </div>
     <button class="create-task-button" (click)="openCreateTaskModal()">Create New Task</button>
   </div>
@@ -17,8 +22,8 @@
   </div>
 </div>
 
-<app-modal #taskModal [title]="selectedTask ? 'Edit Task' : 'Create Task'" (closed)="onModalClose()">
+<n-modal #taskModal [title]="selectedTask ? 'Edit Task' : 'Create Task'" (closed)="onModalClose()">
   @if (showTaskForm()) {
     <app-task-form [task]="selectedTask" (submitForm)="handleTaskFormSubmit($event)"></app-task-form>
   }
-</app-modal>
+</n-modal>
